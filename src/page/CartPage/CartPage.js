@@ -6,13 +6,17 @@ import CartProductCard from "./component/CartProductCard";
 import OrderReceipt from "../PaymentPage/component/OrderReceipt";
 import "./style/cart.style.css";
 import { getCartList } from "../../features/cart/cartSlice";
+import { to } from "@react-spring/web";
 
 const CartPage = () => {
   const dispatch = useDispatch();
   const { cartList, totalPrice } = useSelector((state) => state.cart);
+  console.log("pp", cartList);
+  console.log("tt", totalPrice);
 
   useEffect(() => {
     //카트리스트 불러오기
+    dispatch(getCartList());
   }, []);
 
   return (
@@ -31,7 +35,7 @@ const CartPage = () => {
           )}
         </Col>
         <Col xs={12} md={5}>
-          <OrderReceipt />
+          <OrderReceipt cartList={cartList} totalPrice={totalPrice} />
         </Col>
       </Row>
     </Container>
