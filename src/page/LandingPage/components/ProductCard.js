@@ -5,6 +5,7 @@ import { currencyFormat } from "../../../utils/number";
 const ProductCard = ({ item }) => {
   const navigate = useNavigate();
   const showProduct = (id) => {
+    console.log(`Navigating to /product/${id}`);
     navigate(`/product/${id}`);
   };
   return (

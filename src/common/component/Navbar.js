@@ -39,6 +39,7 @@ const Navbar = ({ user }) => {
   };
   const handleLogout = () => {
     dispatch(logout());
+    window.location.reload()
   };
   return (
     <div>

@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const ToastMessage = () => {
   const { toastMessage } = useSelector((state) => state.ui);
-  console.log("hereToast", toastMessage);
+  //console.log("hereToast", toastMessage);
   useEffect(() => {
     if (toastMessage) {
       const { message, status } = toastMessage;

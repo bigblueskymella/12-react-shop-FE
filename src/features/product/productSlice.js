@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../utils/api";
 import { showToastMessage } from "../common/uiSlice";
+import { cat } from "@cloudinary/url-gen/qualifiers/focusOn";
 
 // 비동기 액션 생성
 export const getProductList = createAsyncThunk(
@@ -12,7 +13,6 @@ export const getProductList = createAsyncThunk(
       if (response.status !== 200) {
         throw new Error("Failed to fetch product list");
       }
-
       // return response.data.products; 🟨
       return response.data;
       // console.log("data",data.data)
@@ -25,7 +25,19 @@ export const getProductList = createAsyncThunk(
 
 export const getProductDetail = createAsyncThunk(
   "product/getProductDetail",
-  async (id, { rejectWithValue }) => {}
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/product/${id}`);
+      // console.log("저기rrr", response);
+      if (response.status !== 200) {
+        throw new Error("Failed to fetch product list");
+      }
+      return response.data;
+    } catch (error) {
+      // console.log("저기API error", error);
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
 );
 
 export const createProduct = createAsyncThunk(
@@ -47,7 +59,18 @@ export const createProduct = createAsyncThunk(
 
 export const deleteProduct = createAsyncThunk(
   "products/deleteProduct",
-  async (id, { dispatch, rejectWithValue }) => {}
+  async (id, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/product/${id}`);
+      if (response.status !== 200) throw new Error(response.error);
+      dispatch(
+        showToastMessage({ message: "상품 삭제 완료", status: "success" })
+      );
+      dispatch(getProductList({ page: 1 }));
+    } catch (error) {
+      return rejectWithValue(error.error);
+    }
+  }
 );
 
 export const editProduct = createAsyncThunk(
@@ -116,6 +139,18 @@ const productSlice = createSlice({
         state.totalPageNum = action.payload.totalPageNum;
       })
       .addCase(getProductList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getProductDetail.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(getProductDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedProduct = action.payload.data;
+        state.error = "";
+      })
+      .addCase(getProductDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
